@@ -1,3 +1,4 @@
+using Chapter.Singleton;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 5f;
     
     Transform cameraTransform;
+
+    // UI variables
+    int firewoodCollected;
+    [SerializeField] int firewoodNeeded;
+    int health;
 
     // Input actions
     public InputActionAsset InputActions;
@@ -32,6 +38,9 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         cameraTransform = Camera.main.transform;
 
+        firewoodCollected = 0;
+        health = 100;
+
         move = InputSystem.actions.FindAction("Move");
     }
 
@@ -43,6 +52,20 @@ public class PlayerController : MonoBehaviour
         movement.y = 0f;
 
         controller.Move(movement * moveSpeed * Time.deltaTime);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Firewood"))
+        {
+            firewoodCollected++;
+            UIManager.Instance.UpdateFirewoodText(firewoodCollected);
+            if (firewoodCollected == firewoodNeeded)
+            {
+                UIManager.Instance.RevealConfirmText();
+            }
+            other.gameObject.SetActive(false);
+        }
     }
 }
 
