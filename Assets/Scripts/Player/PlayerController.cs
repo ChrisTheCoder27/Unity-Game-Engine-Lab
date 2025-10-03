@@ -1,6 +1,7 @@
 using Chapter.Singleton;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -52,6 +53,11 @@ public class PlayerController : MonoBehaviour
         movement.y = 0f;
 
         controller.Move(movement * moveSpeed * Time.deltaTime);
+
+        if (health == 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -65,6 +71,14 @@ public class PlayerController : MonoBehaviour
                 UIManager.Instance.RevealConfirmText();
             }
             other.gameObject.SetActive(false);
+        }
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            if (health > 0)
+            {
+                health -= 10;
+            }
+                UIManager.Instance.UpdateHealthText(health);
         }
         if (other.gameObject.CompareTag("Finish"))
         {

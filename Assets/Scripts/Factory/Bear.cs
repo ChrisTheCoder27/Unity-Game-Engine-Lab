@@ -1,7 +1,6 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class Wolf : Enemy
+public class Bear : Enemy
 {
     Transform playerLocation;
 
@@ -15,7 +14,7 @@ public class Wolf : Enemy
         LookAtPlayer();
 
         Vector3 direction = playerLocation.position - transform.position;
-        transform.position += direction * 0.6f * Time.deltaTime;
+        transform.position += direction * 0.25f * Time.deltaTime;
     }
 
     public override void LookAtPlayer()
@@ -25,7 +24,7 @@ public class Wolf : Enemy
 
     public override void Attack()
     {
-        Debug.Log("Wolf bites!");
+        Debug.Log("Bear slashes!");
     }
 
     void OnTriggerEnter(Collider other)

@@ -7,12 +7,14 @@ namespace Chapter.Singleton
     {
         [SerializeField] TextMeshProUGUI firewoodText;
         [SerializeField] GameObject confirmationText;
+        [SerializeField] TextMeshProUGUI healthText;
         bool canFinishLevel;
 
         void Awake()
         {
             firewoodText.text = "Firewood collected: 0";
             confirmationText.SetActive(false);
+            healthText.text = "Health: 100";
             canFinishLevel = false;
         }
 
@@ -30,6 +32,11 @@ namespace Chapter.Singleton
         {
             confirmationText?.SetActive(true);
             canFinishLevel = true;
+        }
+
+        public void UpdateHealthText(int health)
+        {
+            healthText.text = $"Health: {health}";
         }
 
         public void QuitGame()

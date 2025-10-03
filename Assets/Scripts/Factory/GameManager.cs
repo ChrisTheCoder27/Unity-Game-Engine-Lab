@@ -2,15 +2,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] EnemySpawner spawner;
+    [SerializeField] EnemySpawner wolfSpawner;
+    [SerializeField] EnemySpawner bearSpawner;
 
     void Start()
     {
-        Enemy enemy = spawner.SpawnEnemy();
+        Enemy wolf = wolfSpawner.SpawnEnemy();
+        Enemy bear = bearSpawner.SpawnEnemy();
     }
 
-    void Update()
-    {
-        
-    }
 }

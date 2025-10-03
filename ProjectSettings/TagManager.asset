@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Firewood
+  - Enemy
   layers:
   - Default
   - TransparentFX
