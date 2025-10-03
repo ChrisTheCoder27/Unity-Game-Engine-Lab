@@ -7,11 +7,18 @@ namespace Chapter.Singleton
     {
         [SerializeField] TextMeshProUGUI firewoodText;
         [SerializeField] GameObject confirmationText;
+        bool canFinishLevel;
 
         void Awake()
         {
             firewoodText.text = "Firewood collected: 0";
             confirmationText.SetActive(false);
+            canFinishLevel = false;
+        }
+
+        public bool GetFinishLevel()
+        {
+            return canFinishLevel;
         }
 
         public void UpdateFirewoodText(int total)
@@ -22,7 +29,13 @@ namespace Chapter.Singleton
         public void RevealConfirmText()
         {
             confirmationText?.SetActive(true);
+            canFinishLevel = true;
         }
 
+        public void QuitGame()
+        {
+            Debug.Log("Quitting.");
+            Application.Quit();
+        }
     }
 }

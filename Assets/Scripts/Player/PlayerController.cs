@@ -66,6 +66,11 @@ public class PlayerController : MonoBehaviour
             }
             other.gameObject.SetActive(false);
         }
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            Debug.Log("Quitting.");
+            Application.Quit();
+        }
     }
 }
 
