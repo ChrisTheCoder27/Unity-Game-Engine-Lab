@@ -10,7 +10,7 @@ namespace Chapter.Singleton
         [SerializeField] TextMeshProUGUI healthText;
         bool canFinishLevel;
 
-        void Awake()
+        new void Awake()
         {
             firewoodText.text = "Firewood collected: 0";
             confirmationText.SetActive(false);

@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
             {
                 health -= 10;
             }
-                UIManager.Instance.UpdateHealthText(health);
+            UIManager.Instance.UpdateHealthText(health);
         }
         if (other.gameObject.CompareTag("Finish"))
         {
