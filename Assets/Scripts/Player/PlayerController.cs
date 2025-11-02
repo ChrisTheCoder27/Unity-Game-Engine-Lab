@@ -3,88 +3,121 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PlayerController : MonoBehaviour
+namespace Chapter.Observer
 {
-    Rigidbody rb;
-    CharacterController controller;
-
-    // Movement variables
-    Vector2 moveDirection = Vector2.zero;
-    [SerializeField] float moveSpeed = 5f;
-    
-    Transform cameraTransform;
-
-    // UI variables
-    int firewoodCollected;
-    [SerializeField] int firewoodNeeded;
-    int health;
-
-    // Input actions
-    public InputActionAsset InputActions;
-    InputAction move;
-
-    void OnEnable()
+    public class PlayerController : Subject
     {
-        InputActions.FindActionMap("Player").Enable();
-    }
+        Rigidbody rb;
+        CharacterController controller;
+        CameraController cameraController;
+        bool isShaking;
 
-    void OnDisable()
-    {
-        InputActions.FindActionMap("Player").Disable();
-    }
+        // Movement variables
+        Vector2 moveDirection = Vector2.zero;
+        [SerializeField] float moveSpeed = 5f;
 
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-        controller = GetComponent<CharacterController>();
-        cameraTransform = Camera.main.transform;
+        Transform cameraTransform;
 
-        firewoodCollected = 0;
-        health = 100;
+        // UI variables
+        int firewoodCollected;
+        [SerializeField] int firewoodNeeded;
+        int health;
 
-        move = InputSystem.actions.FindAction("Move");
-    }
+        // Input actions
+        public InputActionAsset InputActions;
+        InputAction move;
 
-    void Update()
-    {
-        moveDirection = move.ReadValue<Vector2>();
-        Vector3 movement = new Vector3(moveDirection.x, 0, moveDirection.y);
-        movement = cameraTransform.forward * movement.z + cameraTransform.right * movement.x;
-        movement.y = 0f;
-
-        controller.Move(movement * moveSpeed * Time.deltaTime);
-
-        if (health == 0)
+        public bool GetIsShaking()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            return isShaking;
         }
-    }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Firewood"))
+        void OnEnable()
         {
-            firewoodCollected++;
-            UIManager.Instance.UpdateFirewoodText(firewoodCollected);
-            if (firewoodCollected == firewoodNeeded)
+            InputActions.FindActionMap("Player").Enable();
+
+            if (cameraController)
             {
-                UIManager.Instance.RevealConfirmText();
+                Attach(cameraController);
             }
-            other.gameObject.SetActive(false);
         }
-        if (other.gameObject.CompareTag("Enemy"))
+
+        void OnDisable()
+        {
+            InputActions.FindActionMap("Player").Disable();
+
+            if (cameraController)
+            {
+                Detach(cameraController);
+            }
+        }
+
+        void Awake()
+        {
+            rb = GetComponent<Rigidbody>();
+            controller = GetComponent<CharacterController>();
+            cameraController = (CameraController)FindFirstObjectByType(typeof(CameraController));
+            cameraTransform = Camera.main.transform;
+
+            firewoodCollected = 0;
+            health = 100;
+
+            move = InputSystem.actions.FindAction("Move");
+        }
+
+        void Update()
+        {
+            moveDirection = move.ReadValue<Vector2>();
+            Vector3 movement = new Vector3(moveDirection.x, 0, moveDirection.y);
+            movement = cameraTransform.forward * movement.z + cameraTransform.right * movement.x;
+            movement.y = 0f;
+
+            controller.Move(movement * moveSpeed * Time.deltaTime);
+
+            if (health == 0)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+
+            if (isShaking)
+            {
+                isShaking = false;
+            }
+        }
+
+        public void TakeDamage(int damage)
         {
             if (health > 0)
             {
-                health -= 10;
+                health -= damage;
             }
+            isShaking = true;
             UIManager.Instance.UpdateHealthText(health);
+
+            NotifyObservers();
         }
-        if (other.gameObject.CompareTag("Finish"))
+
+        void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Quitting.");
-            Application.Quit();
+            if (other.gameObject.CompareTag("Firewood"))
+            {
+                firewoodCollected++;
+                UIManager.Instance.UpdateFirewoodText(firewoodCollected);
+                if (firewoodCollected == firewoodNeeded)
+                {
+                    UIManager.Instance.RevealConfirmText();
+                }
+                other.gameObject.SetActive(false);
+            }
+            if (other.gameObject.CompareTag("Enemy"))
+            {
+                TakeDamage(10);
+            }
+            if (other.gameObject.CompareTag("Finish"))
+            {
+                Debug.Log("Quitting.");
+                Application.Quit();
+            }
         }
     }
 }
-
